@@ -1,15 +1,20 @@
 import React from "react";
+import { StaticRouter } from "react-router-dom/server";
 import fs from "fs";
 import ReactDOMServer from "react-dom/server";
 import express from "express";
-import App from "../client/components/app";
+import App from "../client/components/App";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use("/static", express.static(__dirname));
 
-const createPageApp = async () => {
-  const reactApp = ReactDOMServer.renderToString(<App />);
+const createPageApp = async (location) => {
+  const reactApp = ReactDOMServer.renderToString(
+    <StaticRouter location={location}>
+      <App />
+    </StaticRouter>
+  );
 
   const html = await fs.promises.readFile(`${__dirname}/index.html`, "utf-8");
   const reactHtml = html.replace(
@@ -20,7 +25,7 @@ const createPageApp = async () => {
 };
 
 app.get("*", async (req, res) => {
-  const indexHtml = await createPageApp();
+  const indexHtml = await createPageApp(req.url);
   res.status(200).send(indexHtml);
 });
 
