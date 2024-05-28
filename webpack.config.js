@@ -27,6 +27,12 @@ const scssLoader = {
   ],
 };
 
+const tsLoader = {
+  test: /\.(tsx|ts)?$/,
+  use: "ts-loader",
+  exclude: /node_modules/,
+};
+
 const resolve = {
   extensions: [".js", ".jsx", ".ts", ".tsx"],
 };
@@ -39,7 +45,7 @@ const serverConfig = {
     path: path.join(__dirname, "/dist"),
     filename: "server.js",
   },
-  module: { rules: [babelLoader] },
+  module: { rules: [babelLoader, tsLoader] },
   plugins: [
     new webpack.EntryOptionPlugin({
       PORT: 3000,
@@ -57,7 +63,7 @@ const clientConfig = {
     filename: "client.js",
   },
   module: {
-    rules: [babelLoader, scssLoader],
+    rules: [babelLoader, tsLoader, scssLoader],
   },
   plugins: [
     new HtmlWebpackPlugin({

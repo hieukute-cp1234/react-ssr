@@ -35,9 +35,17 @@
 
   &__result {
     padding: 0 15px;
-    font-size: 70px;
-    text-align: right;
-    color: #efedee;
+
+    > input {
+      border: none;
+      background: transparent;
+      text-align: right;
+      height: 100%;
+      width: 100%;
+      font-size: 70px;
+      outline: none;
+      color: #efedee;
+    }
   }
 
   &__keyboard {

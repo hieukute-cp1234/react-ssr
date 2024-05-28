@@ -1,6 +1,7 @@
-import Home from "../components/Home";
-import Detail from "../components/Detail";
-import Calculate from "../components/Calculate";
+import Home from "../pages/Home";
+import Detail from "../pages/Detail";
+import Calculate from "../pages/Calculate";
+import Histories from "../pages/Histories";
 
 export const ROUTES = [
   {
@@ -17,5 +18,10 @@ export const ROUTES = [
     path: "/calculate",
     name: "calculate",
     component: <Calculate />,
+  },
+  {
+    path: "/histories",
+    name: "histories",
+    component: <Histories />,
   },
 ];
