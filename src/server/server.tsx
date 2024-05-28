@@ -4,10 +4,13 @@ import fs from "fs";
 import ReactDOMServer from "react-dom/server";
 import express from "express";
 import App from "../client/components/App";
+import { ROUTES } from "../client/routers/routes";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-app.use("/static", express.static(__dirname));
+app.use(express.static(__dirname));
+
+const mapRoutes = ROUTES.map((route) => route.path);
 
 const createPageApp = async (location) => {
   const reactApp = ReactDOMServer.renderToString(
@@ -25,8 +28,11 @@ const createPageApp = async (location) => {
 };
 
 app.get("*", async (req, res) => {
-  const indexHtml = await createPageApp(req.url);
-  res.status(200).send(indexHtml);
+  if (mapRoutes.includes(req.url)) {
+    const indexHtml = await createPageApp(req.url);
+    return res.status(200).send(indexHtml);
+  }
+  return res.status(200).send("");
 });
 
 app.listen(PORT, () => {
