@@ -1,9 +1,8 @@
-import React from "react";
 import { StaticRouter } from "react-router-dom/server";
 import fs from "fs";
 import ReactDOMServer from "react-dom/server";
 import express from "express";
-import App from "../client/components/App";
+import App from "../client/App";
 import { ROUTES } from "../client/routers/routes";
 
 const PORT = process.env.PORT || 3000;
@@ -12,7 +11,7 @@ app.use(express.static(__dirname));
 
 const mapRoutes = ROUTES.map((route) => route.path);
 
-const createPageApp = async (location) => {
+const createPageApp = async (location: string) => {
   const reactApp = ReactDOMServer.renderToString(
     <StaticRouter location={location}>
       <App />
@@ -27,7 +26,7 @@ const createPageApp = async (location) => {
   return reactHtml;
 };
 
-app.get("*", async (req, res) => {
+app.get("*", async (req: any, res: any) => {
   if (mapRoutes.includes(req.url)) {
     const indexHtml = await createPageApp(req.url);
     return res.status(200).send(indexHtml);
