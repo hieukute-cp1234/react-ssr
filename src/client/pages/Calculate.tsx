@@ -1,61 +1,72 @@
 import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ContextAPI } from "../contexts";
+import { actions, CLEAR_NUMBER, CACULATES } from "../constants/calculate";
+
+interface HistoriesContext {
+  histories: string[];
+  setHistories: (histories: string[]) => void;
+}
 
 const CalculatePage = () => {
   const [result, setResult] = useState("");
-  const [keepKey, setKeepKey] = useState("");
-  const [aldValue, setOldValue] = useState("");
-  const { histories, setHistories }: any = useContext(ContextAPI);
+  const [keepValue, setKeepValue] = useState("");
+  const [oldValue, setOldValue] = useState("");
+  const { histories, setHistories }: HistoriesContext = useContext(ContextAPI);
 
   useEffect(() => {
     window.addEventListener("click", (e: any) => {
       if (!e.target.closest(".calculate")) {
-        setResult(aldValue);
+        setResult(oldValue);
       }
     });
-  }, [aldValue]);
+  }, [oldValue]);
 
-  const textAC = +result ? "C" : "AC";
   const acceptNumber = (key: string) => /^[0-9]+$/.test(key);
-
-  const handleClearResult = () => {
-    setResult("");
-    setKeepKey("");
-  };
 
   const handleResult = (str: string) => new Function("return " + str)();
 
-  const handlePressNumber = (key: string) => {
-    if (!acceptNumber(key)) return;
-    if (!acceptNumber(keepKey.slice(-1))) {
-      setResult(key);
-    } else {
-      setResult(result + key);
-    }
-    setKeepKey(keepKey + key);
+  const renderColorToButtonAction = (key: string) => {
+    if (CACULATES.includes(key)) return "#696363";
+
+    if (acceptNumber(key) || key === ",") return "";
+
+    return "#efa246";
   };
 
-  const handlePressCalculation = (key: string) => {
-    if (acceptNumber(key)) return;
-
-    if (key === "=") {
-      const newResult = handleResult(keepKey);
-      setResult(newResult);
-      setHistories([...histories, `${keepKey} = ${newResult}`]);
-      setKeepKey("");
+  const handleActionByButton = (key: string) => {
+    if (CLEAR_NUMBER.includes(key)) {
+      setResult("");
+      setKeepValue("");
       return;
     }
 
-    if (!acceptNumber(keepKey.slice(-1))) return;
-    setKeepKey(keepKey + key);
+    if (acceptNumber(key)) {
+      if (!acceptNumber(keepValue.slice(-1))) {
+        setResult(key);
+      } else {
+        setResult(result + key);
+      }
+      setKeepValue(keepValue + key);
+      return;
+    }
+
+    if (key === "=") {
+      const newResult = handleResult(keepValue);
+      setResult(newResult);
+      setHistories([...histories, `${keepValue} = ${newResult}`]);
+      setKeepValue("");
+      return;
+    }
+
+    if (!acceptNumber(keepValue.slice(-1))) return;
+    setKeepValue(keepValue + key);
   };
 
   const handleKeyDown = ({ key }: any) => {
     const selectText = window.getSelection()?.toString();
     if (selectText && acceptNumber(key)) {
       setOldValue(result);
-      console.log(result);
       setResult(key);
     }
   };
@@ -76,75 +87,19 @@ const CalculatePage = () => {
         </div>
         <div className="calculate__keyboard">
           <div className="calculate__keyboard__number">
-            <div className="calculate__keyboard__number__row">
-              <button
-                className="calculate__keyboard--othor"
-                onClick={handleClearResult}
-              >
-                {textAC}
-              </button>
-              <button
-                className="calculate__keyboard--othor"
-                onClick={() => handlePressCalculation("+/-")}
-              >
-                +/-
-              </button>
-              <button
-                className="calculate__keyboard--othor"
-                onClick={() => handlePressCalculation("%")}
-              >
-                %
-              </button>
-              <button
-                className="calculate__keyboard--calculation"
-                onClick={() => handlePressCalculation("/")}
-              >
-                /
-              </button>
-            </div>
-            <div className="calculate__keyboard__number__row">
-              <button onClick={() => handlePressNumber("7")}>7</button>
-              <button onClick={() => handlePressNumber("8")}>8</button>
-              <button onClick={() => handlePressNumber("9")}>9</button>
-              <button
-                className="calculate__keyboard--calculation"
-                onClick={() => handlePressCalculation("*")}
-              >
-                x
-              </button>
-            </div>
-            <div className="calculate__keyboard__number__row">
-              <button onClick={() => handlePressNumber("4")}>4</button>
-              <button onClick={() => handlePressNumber("5")}>5</button>
-              <button onClick={() => handlePressNumber("6")}>6</button>
-              <button
-                className="calculate__keyboard--calculation"
-                onClick={() => handlePressCalculation("-")}
-              >
-                -
-              </button>
-            </div>
-            <div className="calculate__keyboard__number__row">
-              <button onClick={() => handlePressNumber("1")}>1</button>
-              <button onClick={() => handlePressNumber("2")}>2</button>
-              <button onClick={() => handlePressNumber("3")}>3</button>
-              <button
-                className="calculate__keyboard--calculation"
-                onClick={() => handlePressCalculation("+")}
-              >
-                +
-              </button>
-            </div>
-            <div className="calculate__keyboard__number__row">
-              <button onClick={() => handlePressNumber("0")}>0</button>
-              <button onClick={() => handlePressCalculation(",")}>,</button>
-              <button
-                className="calculate__keyboard--calculation"
-                onClick={() => handlePressCalculation("=")}
-              >
-                =
-              </button>
-            </div>
+            {actions(!!+result).map((row: string[], index: number) => (
+              <div key={index} className="calculate__keyboard__number__row">
+                {row.map((key: string) => (
+                  <button
+                    key={key}
+                    style={{ backgroundColor: renderColorToButtonAction(key) }}
+                    onClick={() => handleActionByButton(key)}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -5,7 +5,8 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "react"
+    "react",
+    "prettier"
   ],
   "settings": {
     "react": {
@@ -40,6 +41,7 @@
   "rules": {
     "no-console": "warn",
     "no-eval": "error",
+    "prettier/prettier": ["error"],
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       2,

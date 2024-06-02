@@ -1,5 +1,5 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
-const initState = {}
+const initState: any = {};
 
 export const ContextAPI = createContext(initState);
